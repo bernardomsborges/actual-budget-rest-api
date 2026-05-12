@@ -7,7 +7,7 @@ services:
     ports:
       - "3010:3010"
     volumes:
-      - actual-api-data:/app/.actual-cache
+      - ./data/prod/actual-api:/app/.actual-cache  # Persistent encrypted DB and SQLite auth.db
     working_dir: /app
     command: npm start
     environment:
@@ -57,7 +57,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data # <-- MUDANÇA AQUI: Volume Nomeado
+      - ./data/prod/redis:/data
     command: redis-server --appendonly yes
     healthcheck:
       test:
@@ -73,8 +73,3 @@ services:
 networks:
   dokploy-network:
     external: true
-
-# <-- ESTA SECÇÃO DIZ AO DOCKER PARA CRIAR OS VOLUMES
-volumes:
-  actual-api-data:
-  redis-data:
