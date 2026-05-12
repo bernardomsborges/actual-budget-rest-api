@@ -27,6 +27,7 @@ services:
       - ACTUAL_SERVER_URL=${ACTUAL_SERVER_URL}
       - ACTUAL_PASSWORD=${ACTUAL_PASSWORD}
       - ACTUAL_SYNC_ID=${ACTUAL_SYNC_ID}
+      - ACTUAL_SYNC_PASSWORD=${ACTUAL_SYNC_PASSWORD}
       
     depends_on:
       redis:
