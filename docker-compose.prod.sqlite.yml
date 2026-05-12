@@ -4,7 +4,7 @@ services:
     image: actual-rest-api
     container_name: actual-rest-api
     ports:
-      - 3010:3010
+      - "3010:3010"
     volumes:
       - ./data/prod/actual-api:/app/.actual-cache
     working_dir: /app
@@ -12,10 +12,13 @@ services:
     environment:
       - DB_TYPE=sqlite
       - PORT=3010
-      - NODE_ENV=${NODE_ENV}
-      - TRUST_PROXY=${TRUST_PROXY}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
-      - ADMIN_USER=${ADMIN_USER}
+      - HOST=0.0.0.0 # <-- OBRIGA A API A ACEITAR CONEXÕES DE FORA
+      - NODE_ENV=production
+      - TRUST_PROXY=true
+      - ALLOWED_ORIGINS=https://api-budget.fluxzone.com.br
+      
+      # Certifique-se de que estas variáveis existem na aba "Environment"
+      - ADMIN_USER=${ADMIN_USER:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
@@ -23,39 +26,24 @@ services:
       - ACTUAL_SERVER_URL=${ACTUAL_SERVER_URL}
       - ACTUAL_PASSWORD=${ACTUAL_PASSWORD}
       - ACTUAL_SYNC_ID=${ACTUAL_SYNC_ID}
+      
     depends_on:
       redis:
         condition: service_healthy
     healthcheck:
       test:
         - CMD-SHELL
-        - wget --no-verbose --tries=1 --spider http://localhost:3010/v2/health || exit 1
+        - wget --no-verbose --tries=1 --spider http://127.0.0.1:3010/v2/health || exit 1
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    labels:
-      - traefik.docker.network=dokploy-network
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-web.rule=Host(`api-budget.fluxzone.com.br`)
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-web.entrypoints=web
-      - traefik.http.services.testes-de-stacks-apiactualbudget-jtsgwu-8-web.loadbalancer.server.port=3010
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-web.service=testes-de-stacks-apiactualbudget-jtsgwu-8-web
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-web.middlewares=redirect-to-https@file
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-websecure.rule=Host(`api-budget.fluxzone.com.br`)
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-websecure.entrypoints=websecure
-      - traefik.http.services.testes-de-stacks-apiactualbudget-jtsgwu-8-websecure.loadbalancer.server.port=3010
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-websecure.service=testes-de-stacks-apiactualbudget-jtsgwu-8-websecure
-      - traefik.http.routers.testes-de-stacks-apiactualbudget-jtsgwu-8-websecure.tls.certresolver=letsencrypt
-      - traefik.enable=true
-    networks:
-      - dokploy-network
-      - default
 
   redis:
     image: redis:7-alpine
     container_name: actual-rest-api-redis
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - ./data/prod/redis:/data
     command: redis-server --appendonly yes
@@ -69,7 +57,3 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
-
-networks:
-  dokploy-network:
-    external: true
