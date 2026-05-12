@@ -10,18 +10,29 @@ services:
     working_dir: /app
     command: npm start
     # Use .env if not using secrets manager with CI/CD pipeline
-    #env_file:
+    # env_file:
     #  - .env
     environment:
       # Environment variables should be provided via secrets manager or .env file
       # For production, use GitHub Secrets, AWS Secrets Manager, etc.
       DB_TYPE: sqlite
       PORT: 3010
+      - NODE_ENV=${NODE_ENV}
+      - TRUST_PROXY=${TRUST_PROXY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - ACTUAL_SERVER_URL=${ACTUAL_SERVER_URL}
+      - ACTUAL_PASSWORD=${ACTUAL_PASSWORD}
+      - ACTUAL_SYNC_ID=${ACTUAL_SYNC_ID}
     depends_on:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3010/v2/health || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider https://buget.fluxzone.com.br/v2/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
