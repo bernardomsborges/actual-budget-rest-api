@@ -234,6 +234,22 @@ docker run -d \
 - ✅ For n8n: Use HTTPS callback URLs, configure OAuth2 credentials
 - ✅ Never commit `.env` files or secrets to version control
 
+### Deploy no Dokploy (Simplificado)
+
+Para um deployment rápido e fácil no Dokploy, siga o **[DOKPLOY_QUICKSTART.md](DOKPLOY_QUICKSTART.md)** (5 minutos) ou a **[DOKPLOY_DEPLOYMENT.md](DOKPLOY_DEPLOYMENT.md)** (completo).
+
+**Resumo:**
+1. Crie novo projeto no Dokploy
+2. Selecione arquivo: `docker-compose.prod.sqlite.yml` (recomendado) ou `docker-compose.prod.postgres.yml`
+3. Configure variáveis de ambiente (JWT_SECRET, ADMIN_PASSWORD, etc.)
+4. Mapeie volumes para dados persistentes
+5. Configure domínio e clique Deploy
+
+**Documentos úteis:**
+- [DOKPLOY_QUICKSTART.md](DOKPLOY_QUICKSTART.md) - Setup em 5 minutos
+- [DOKPLOY_DEPLOYMENT.md](DOKPLOY_DEPLOYMENT.md) - Guia completo
+- [DEPLOY_GUIDE_3010.md](DEPLOY_GUIDE_3010.md) - Configuração por linha de comando
+
 ## Development
 
 ### Quick Start (Docker - Recommended)
