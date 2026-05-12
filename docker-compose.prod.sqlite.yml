@@ -4,7 +4,7 @@ services:
     image: actual-rest-api  # Tagged for reuse
     container_name: actual-rest-api
     ports:
-      - "3000:3000"
+      - "3010:3010"
     volumes:
       - ./data/prod/actual-api:/app/.actual-cache  # Persistent encrypted DB and SQLite auth.db
     working_dir: /app
