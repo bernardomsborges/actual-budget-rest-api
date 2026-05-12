@@ -3,10 +3,11 @@ services:
     build: .
     image: actual-rest-api
     container_name: actual-rest-api
+    user: "root"
     ports:
       - "3010:3010"
     volumes:
-      - actual-api-data:/app/.actual-cache # <-- MUDANÇA AQUI: Volume Nomeado
+      - actual-api-data:/app/.actual-cache
     working_dir: /app
     command: npm start
     environment:
