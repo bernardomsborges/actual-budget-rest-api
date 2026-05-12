@@ -6,18 +6,18 @@ services:
     ports:
       - "3010:3010"
     volumes:
-      - ./data/prod/actual-api:/app/.actual-cache
+      - actual-api-data:/app/.actual-cache # <-- MUDANÇA AQUI: Volume Nomeado
     working_dir: /app
     command: npm start
     environment:
       - DB_TYPE=sqlite
       - PORT=3010
-      - HOST=0.0.0.0 # <-- OBRIGA A API A ACEITAR CONEXÕES DE FORA
+      - HOST=0.0.0.0
       - NODE_ENV=production
       - TRUST_PROXY=true
       - ALLOWED_ORIGINS=https://api-budget.fluxzone.com.br
+      - REDIS_HOST=redis # <-- MUDANÇA AQUI: Liga a API ao Redis
       
-      # Certifique-se de que estas variáveis existem na aba "Environment"
       - ADMIN_USER=${ADMIN_USER:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
@@ -38,6 +38,16 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.routers.actual-api.rule=Host(`api-budget.fluxzone.com.br`)"
+      - "traefik.http.routers.actual-api.entrypoints=websecure"
+      - "traefik.http.routers.actual-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.actual-api.loadbalancer.server.port=3010"
+    networks:
+      - dokploy-network
+      - default
 
   redis:
     image: redis:7-alpine
@@ -45,7 +55,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./data/prod/redis:/data
+      - redis-data:/data # <-- MUDANÇA AQUI: Volume Nomeado
     command: redis-server --appendonly yes
     healthcheck:
       test:
@@ -57,3 +67,12 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
+
+networks:
+  dokploy-network:
+    external: true
+
+# <-- ESTA SECÇÃO DIZ AO DOCKER PARA CRIAR OS VOLUMES
+volumes:
+  actual-api-data:
+  redis-data:
